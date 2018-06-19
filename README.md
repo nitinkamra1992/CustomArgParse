@@ -35,8 +35,7 @@ config = {
 ```
 
 ```bash
-python3 <main_program.py> -c config.py --arg1 3 --arg2.obj2 bar
-    [other arguments added to the parser]
+python3 <main_program.py> -c config.py --arg1 3 --arg2.obj2 bar [other arguments added to the parser]
 ```
 
-Both parse_args and parse_known_args methods return the same outputs as their complements in the argparse package, except that the returned namespaces also contain all arguments from the supplied configuration file. Finally, the package provides a function called `args_to_dict` which can be used to convert the returned namespace into a dictionary format.
+Both `parse_args` and `parse_known_args` methods return the same outputs as their complements in the `argparse` package, except that the returned namespaces also contain all arguments from the supplied configuration file. Finally, the package provides a function called `args_to_dict` which can be used to convert the returned namespace into a dictionary format.
