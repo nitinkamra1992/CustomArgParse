@@ -3,7 +3,6 @@ import argparse
 import sys
 from gettext import gettext
 
-
 # ############################ Functions ###############################
 
 
@@ -66,7 +65,7 @@ def args_to_dict(args, expand=True):
         Args:
             args: The namespace to convert to dictionary. Typically taken as
                 output from parse_args() method.
-            flatten: Boolean to choose if flattened args should be expanded
+            expand: Boolean to choose if flattened args should be expanded
                 into nested dictionaries.
 
         Returns:
@@ -75,7 +74,7 @@ def args_to_dict(args, expand=True):
         if expand:
             return expand_dict(vars(args))
         else:
-            return vars(args).copy()
+            return vars(args).copy()  # vars(args) accesses args internally
 
 
 # ############################# Classes ################################
@@ -179,18 +178,14 @@ class CustomArgumentParser(argparse.ArgumentParser):
         # Flatten all keys in config and add them to the parser as arguments
         flat_config = flatten_keys(config)
         for k, v in flat_config:
-            self.add_argument('--' + k, default=v, type=type(v))
+            if v is None:
+                self.add_argument('--' + k, default=None, type=str)
+            else:
+                self.add_argument('--' + k, default=v, type=type(v))
 
         # Parse all args again
         (args, unknown) = \
             super(CustomArgumentParser, self).parse_known_args()
-
-        # Ensure override priority
-        args_dict = vars(args)  # args_dict directly accesses args
-        config_dict = dict(flat_config)
-        for key in args_dict:
-            if key in config_dict and key not in sys.argv:
-                args_dict[key] = config_dict[key]
 
         return args, unknown
 
@@ -202,9 +197,11 @@ if __name__ == '__main__':
     parser = CustomArgumentParser(description='Train model on dataset')
 
     # Add arguments (including a --configfile)
+    parser.add_argument('name')
     parser.add_argument('-c', '--configfile')
     parser.add_argument('-d', '--datafile')
     parser.add_argument('-m', '--modelfile')
+    parser.add_argument('--epochs', default=1, type=int)
 
     # Test parse_known_args()
     args, unknown = parser.parse_known_args()
@@ -220,4 +217,4 @@ if __name__ == '__main__':
 
     # Test args_to_dict
     print('Expanded args: \n{}'.format(args_to_dict(args, expand=True)))
-    print('Expanded args: \n{}'.format(args_to_dict(args, expand=False)))
+    print('Unexpanded args: \n{}'.format(args_to_dict(args, expand=False)))

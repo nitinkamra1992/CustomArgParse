@@ -39,3 +39,11 @@ python3 <main_program.py> -c config.py --arg1 3 --arg2.obj2 bar [other arguments
 ```
 
 Both `parse_args` and `parse_known_args` methods return the same outputs as their complements in the `argparse` package, except that the returned namespaces also contain all arguments from the supplied configuration file. Finally, the package provides a function called `args_to_dict` which can be used to convert the returned namespace into a dictionary format.
+
+## Notes
+
+**Note 1**: The module infers the data type of arguments added from `config`, by the values provided for those arguments in `config`. However, if an argument in `config` is expected to accept values of multiple different types, the module cannot infer this and hence only allows values of the inferred type for such arguments.
+
+**Note 2**: If the value of an argument in `config` is `None`, the module does not infer its type to be `NoneType` but rather as `str` and hence allows overriding that argument with string values from the command-line.
+
+**Note 3**: It is recommended to not add arguments with the same name to both `config` and the CustomArgumentParser object, since the arguments from both sources will be combined internally. If an argument with the same name is added to both `config` and the CustomArgumentParser object, the argument will have its data type inferred from the value provided in `config`, however the value retained will be that provided via the command-line (unless it is skipped, in which case the value from `config` is retained). In such cases, if the value provided via the command-line cannot be interpreted as the data type inferred from `config`, an error occurs.
