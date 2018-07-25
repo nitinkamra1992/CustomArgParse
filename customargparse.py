@@ -77,6 +77,43 @@ def args_to_dict(args, expand=True):
             return vars(args).copy()  # vars(args) accesses args internally
 
 
+# ######################## Custom Data Types ###########################
+
+
+def pytuple(s):
+    assert type(s) == str, 'Input {} cannot be parsed into a tuple'.format(s)
+    try:
+        L = [el.strip() for el in s.strip('()[]').split(',')]
+        for i in range(len(L)):
+            try:
+                L[i] = int(L[i])
+            except ValueError as e:
+                try:
+                    L[i] = float(L[i])
+                except ValueError as e:
+                    pass
+        return tuple(L)
+    except:
+        raise TypeError('Input {} cannot be parsed into a tuple'.format(s))
+
+
+def pylist(s):
+    assert type(s) == str, 'Input {} cannot be parsed into a list'.format(s)
+    try:
+        L = [el.strip() for el in s.strip('[]()').split(',')]
+        for i in range(len(L)):
+            try:
+                L[i] = int(L[i])
+            except ValueError as e:
+                try:
+                    L[i] = float(L[i])
+                except ValueError as e:
+                    pass
+        return list(L)
+    except:
+        raise TypeError('Input {} cannot be parsed into a list'.format(s))
+
+
 # ############################# Classes ################################
 
 
@@ -181,7 +218,12 @@ class CustomArgumentParser(argparse.ArgumentParser):
             if v is None:
                 self.add_argument('--' + k, default=None, type=str)
             else:
-                self.add_argument('--' + k, default=v, type=type(v))
+                if type(v) == tuple:
+                    self.add_argument('--' + k, default=v, type=pytuple)
+                elif type(v) == list:
+                    self.add_argument('--' + k, default=v, type=pylist)
+                else:
+                    self.add_argument('--' + k, default=v, type=type(v))
 
         # Parse all args again
         (args, unknown) = \
@@ -194,13 +236,13 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
 if __name__ == '__main__':
     # Create a custom argument parser
-    parser = CustomArgumentParser(description='Train model on dataset')
+    parser = CustomArgumentParser(description='Custom Argument Parser')
 
     # Add arguments (including a --configfile)
     parser.add_argument('name')
     parser.add_argument('-c', '--configfile')
     parser.add_argument('-d', '--datafile')
-    parser.add_argument('-m', '--modelfile')
+    parser.add_argument('--model', type=pylist)
     parser.add_argument('--epochs', default=1, type=int)
 
     # Test parse_known_args()
