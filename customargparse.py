@@ -1,7 +1,11 @@
-import importlib.util
 import argparse
 import sys
 from gettext import gettext
+
+if (sys.version_info[0] < 3):  # for python2
+    import imp
+else:                          # for python3
+    import importlib.util
 
 # ############################ Functions ###############################
 
@@ -207,10 +211,15 @@ class CustomArgumentParser(argparse.ArgumentParser):
         # Parse the configfile first
         (args, unknown) = \
             super(CustomArgumentParser, self).parse_known_args()
-        spec = importlib.util.spec_from_file_location('cfg', args.configfile)
-        conf_mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(conf_mod)
-        config = conf_mod.config
+
+        if sys.version_info[0] < 3:  # python2
+            conf_mod = imp.load_source('cfg', args.configfile)
+            config = conf_mod.config
+        else:                        # python3
+            spec = importlib.util.spec_from_file_location('cfg', args.configfile)
+            conf_mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(conf_mod)
+            config = conf_mod.config
 
         # Flatten all keys in config and add them to the parser as arguments
         flat_config = flatten_keys(config)
@@ -247,16 +256,16 @@ if __name__ == '__main__':
 
     # Test parse_known_args()
     args, unknown = parser.parse_known_args()
-    print('args:')
+    print('\nargs:')
     print(args)
-    print('unknown:')
+    print('\nunknown:')
     print(unknown)
 
     # Test parse_args()
     args = parser.parse_args()
-    print('args:')
+    print('\nargs:')
     print(args)
 
     # Test args_to_dict
-    print('Expanded args: \n{}'.format(args_to_dict(args, expand=True)))
-    print('Unexpanded args: \n{}'.format(args_to_dict(args, expand=False)))
+    print('\nExpanded args: \n{}'.format(args_to_dict(args, expand=True)))
+    print('\nUnexpanded args: \n{}'.format(args_to_dict(args, expand=False)))

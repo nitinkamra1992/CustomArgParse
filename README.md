@@ -1,12 +1,12 @@
 # CustomArgParse
 
-This is a custom argument parser for Python v3.5 and above. The parser essentially extends the `argparse` python package to provide support for providing options via configuration files.
+This is a custom argument parser for Python. The parser essentially extends the `argparse` python package to provide support for providing options via configuration files.
 
 ## Compatibility
-The tool has been written for Ubuntu and tested on Python v3.5 and above but may be compatible with other versions of python too.
+The tool has been written for Ubuntu and tested on both Python v2.7 and Python v3.5. It is also expected to be compatible with higher versions of python too.
 
 ## Dependencies
-Requires python3 and the `argparse` package:
+Requires python2 or python3 and the `argparse` package:
 
 ```
 pip install argparse
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
 ```bash
 # Command from the command-line
-python3 main.py -c config.py --model '[5, mode, 35.6]' --epochs 5 --arg1 3 --arg2.obj2 bar [other arguments added to the parser]
+python main.py -c config.py --model '[5, mode, 35.6]' --epochs 5 --arg1 3 --arg2.obj2 bar [other arguments added to the parser]
 ```
 
 The example shows how one can specify a configuration file with `--configfile` argument, add a `pylist` type argument which can accept lists with elements of type `int`, `float` or `str` (see **Note 4** below) and other regular arguments like `--epochs` too. Optionally one can also override some of the arguments in the configuration file like `--arg1` or even nested arguments like `--arg2.obj2` with the dot `(.)` operator.
