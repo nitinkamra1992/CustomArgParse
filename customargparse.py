@@ -98,7 +98,7 @@ def pytuple(s):
                     pass
         return tuple(L)
     except:
-        raise TypeError('Input {} cannot be parsed into a tuple'.format(s))
+        raise argparse.ArgumentTypeError('Input {} cannot be parsed into a tuple'.format(s))
 
 
 def pylist(s):
@@ -115,7 +115,16 @@ def pylist(s):
                     pass
         return list(L)
     except:
-        raise TypeError('Input {} cannot be parsed into a list'.format(s))
+        raise argparse.ArgumentTypeError('Input {} cannot be parsed into a list'.format(s))
+
+
+def pybool(v):
+    if v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    elif v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    else:
+        raise argparse.ArgumentTypeError('Input {} cannot be parsed into a list'.format(v))
 
 
 # ############################# Classes ################################
@@ -231,6 +240,8 @@ class CustomArgumentParser(argparse.ArgumentParser):
                     self.add_argument('--' + k, default=v, type=pytuple)
                 elif type(v) == list:
                     self.add_argument('--' + k, default=v, type=pylist)
+                elif type(v) == bool:
+                    self.add_argument('--' + k, default=v, type=pybool)
                 else:
                     self.add_argument('--' + k, default=v, type=type(v))
 
